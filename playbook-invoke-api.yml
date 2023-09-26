@@ -1,0 +1,23 @@
+---
+- name: playbook that looks up api.nasa.gov/mars-photos/api/v1
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    api_key: "{{ api_key }}"
+
+  tasks:
+    - name: perform http lookup
+      ansible.builtin.uri:
+        url: https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000@api_key={{ api_key }}
+      register: cupcake
+        
+    - name: show if uri lookup worked
+      ansible.builtin.debug:
+        var: cupcake.get('json').get('photos')[0].get('camera')
+
+    - name: show if uri lookup working
+      ansible.builtin.debug:
+        var: item.get('camera')     
+      loop:  "{{ cupcake.get('json').get('photos') }}"
